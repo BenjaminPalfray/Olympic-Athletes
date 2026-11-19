@@ -1,0 +1,101 @@
+---
+title: "Final Project"
+output: html_document
+date: "2026-11-19"
+---
+
+## Research Question
+
+Can attributes of an athlete help explain Olympic medal success?
+
+## Load Data
+
+```{r load-data}
+# Load the package and the complete dataset
+library(olympicAthletes)
+data(olympic_athletes)
+
+athletes_raw <- olympic_athletes
+
+data.frame(
+  rows = nrow(athletes_raw),
+  columns = ncol(athletes_raw)
+)
+```
+
+## Remove Missing Athlete Attributes
+
+```{r remove-missing}
+# Remove rows missing sex, age, height, or weight
+athletes_clean <- athletes_raw[
+  complete.cases(athletes_raw[, c("sex", "age", "height", "weight")]),
+]
+
+# Report how many rows were removed
+data.frame(
+  before = nrow(athletes_raw),
+  after = nrow(athletes_clean),
+  removed = nrow(athletes_raw) - nrow(athletes_clean)
+)
+```
+
+## Remove Duplicate Rows
+
+```{r remove-duplicates}
+# Remove completely identical rows
+rows_before <- nrow(athletes_clean)
+
+athletes_clean <- athletes_clean[
+  !duplicated(athletes_clean),
+]
+
+# Report how many duplicates were removed
+data.frame(
+  before = rows_before,
+  after = nrow(athletes_clean),
+  removed = rows_before - nrow(athletes_clean)
+)
+```
+
+## Identify Medal Success
+
+```{r medal-success}
+# Mark medal-winning participations: 1 = medal, 0 = no medal
+athletes_clean$medal_won <- as.integer(
+  !is.na(athletes_clean$medal)
+)
+
+# Count participations with and without a medal
+data.frame(
+  outcome = c("No medal", "Medal"),
+  participations = c(
+    sum(athletes_clean$medal_won == 0),
+    sum(athletes_clean$medal_won == 1)
+  )
+)
+```
+
+## Inspect Numeric Values
+
+```{r inspect-values}
+# Summarize age, height in cm, and weight in kg
+summary(athletes_clean[, c("age", "height", "weight")])
+```
+
+## Inspect Extreme Records
+
+```{r inspect-extremes}
+# Identify minimum and maximum values without removing them
+extreme_rows <- subset(
+  athletes_clean,
+  age %in% range(age) |
+    height %in% range(height) |
+    weight %in% range(weight)
+)
+
+# Display the extreme records with their sporting context
+extreme_rows[, c(
+  "name", "sex", "age", "height", "weight",
+  "sport", "event", "year", "medal"
+)]
+```
