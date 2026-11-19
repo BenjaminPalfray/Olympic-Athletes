@@ -17,6 +17,13 @@ data(olympic_athletes)
 
 athletes_raw <- olympic_athletes
 
+# Keep only Summer Olympic participations from 2000 through 2024
+athletes_raw <- subset(
+  athletes_raw,
+  year >= 2000 & year <= 2024 & season == "Summer"
+)
+
+# Display the size of the filtered dataset
 data.frame(
   rows = nrow(athletes_raw),
   columns = ncol(athletes_raw)
@@ -82,20 +89,12 @@ data.frame(
 summary(athletes_clean[, c("age", "height", "weight")])
 ```
 
-## Inspect Extreme Records
 
-```{r inspect-extremes}
-# Identify minimum and maximum values without removing them
-extreme_rows <- subset(
-  athletes_clean,
-  age %in% range(age) |
-    height %in% range(height) |
-    weight %in% range(weight)
-)
 
-# Display the extreme records with their sporting context
-extreme_rows[, c(
-  "name", "sex", "age", "height", "weight",
-  "sport", "event", "year", "medal"
-)]
-```
+
+
+
+
+
+
+
